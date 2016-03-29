@@ -1,6 +1,6 @@
 {
   "name": "resx-to-typescript",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Converts resx files to TypeScript models",
   "main": "index.js",
   "scripts": {
@@ -21,11 +21,11 @@
   },
   "keywords": [
     "typescript",
-    "csproj",
-    "vbproj",
-    "project",
-    "vs2015",
-	"add"
+    "resx",
+    "transform",
+    "build",
+    "model",
+    "vs2015"
   ],
   "author": "Martijn van der Corput",
   "license": "ISC",
