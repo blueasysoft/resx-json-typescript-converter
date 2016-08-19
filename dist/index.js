@@ -6,7 +6,7 @@ var search = require('recursive-search');
 var xml2js = require('xml2js');
 function execute(typeScriptResourcesNamespace, virtualResxFolder, virtualTypeScriptFolder) {
     var files = null;
-    var virtualProjectRoot = '\\..\\..\\';
+    var virtualProjectRoot = '\\..\\..\\..\\';
     if (virtualResxFolder === undefined || virtualResxFolder === '') {
         files = search.recursiveSearchSync(/.resx$/, __dirname + virtualProjectRoot);
     }

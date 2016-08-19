@@ -9,7 +9,7 @@ const xml2js = require('xml2js');
 
 export function execute(typeScriptResourcesNamespace: string, virtualResxFolder: string, virtualTypeScriptFolder: string): void {
     let files: any = null;
-    const virtualProjectRoot = '\\..\\..\\';
+    const virtualProjectRoot = '\\..\\..\\..\\';
         
     if (virtualResxFolder === undefined || virtualResxFolder === '') {
         files = search.recursiveSearchSync(/.resx$/, __dirname + virtualProjectRoot );   
