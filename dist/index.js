@@ -56,7 +56,7 @@ function execute(typeScriptResourcesNamespace, virtualResxFolder, virtualTypeScr
             }
         }
         for (var j = 0, nrOfResources = resources.length; j < nrOfResources; j++) {
-            content = content + '       public ' + resources[j].name + ': string = \'' + resources[j].value + '\';\n';
+            content = content + '       public ' + resources[j].name + ': string = `' + resources[j].value + '`;\n';
         }
         content = content + '   }\n';
         content = content + '}\n';

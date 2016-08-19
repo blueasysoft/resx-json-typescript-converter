@@ -26,6 +26,11 @@ where the parameters stand for:
 '/Resources'            -> Relative folder to scan for .resx files.
 '/App/Resources'        -> Output directory for TypeScript files
 
+UPDATES:
+
+2016-08-19 Refactored code and added support for multi line resources. (v 1.0.7)
+
 Voilá, the TypeScript models for your resx files are added to your project and ready to use in typescript development/mvc bundling.
+
 
 

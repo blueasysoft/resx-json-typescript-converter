@@ -7,7 +7,6 @@ const mkpath = require('mkpath');
 const search = require('recursive-search');
 const xml2js = require('xml2js');
 
-
 export function execute(typeScriptResourcesNamespace: string, virtualResxFolder: string, virtualTypeScriptFolder: string): void {
     let files: any = null;
     const virtualProjectRoot = '\\..\\..\\';
