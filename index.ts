@@ -117,7 +117,7 @@ export function execute(typeScriptResourcesNamespace: string, virtualResxFolder:
         const splittedDirName = __dirname.split('\\');
         const spliitedRootDirName: Array<string> = [];
         
-        for (let i = 0, length = splittedDirName.length - 2; i < length; i++) {
+        for (let i = 0, length = splittedDirName.length - 3; i < length; i++) {
             spliitedRootDirName.push(splittedDirName[i]);
         }
         
