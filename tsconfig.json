@@ -1,0 +1,11 @@
+{
+	"compilerOptions": {
+		"declaration": true,
+		"module": "commonjs",
+        "moduleResolution": "node",  
+		"noImplicitAny": true ,
+        "outDir": "dist",     
+		"target": "es5"
+	},
+    "compileOnSave": true
+}

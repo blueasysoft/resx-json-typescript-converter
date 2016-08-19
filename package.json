@@ -2,12 +2,15 @@
   "name": "resx-to-typescript",
   "version": "1.0.4",
   "description": "Converts resx files to TypeScript models",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": {
     "name": "Martijn van der Corput"
+  },
+  "devDependencies": {
+    "typescript": "^1.8.10"
   },
   "dependencies": {
     "add-typescript-file-to-project": "1.0.0",
@@ -27,7 +30,6 @@
     "model",
     "vs2015"
   ],
-  "author": "Martijn van der Corput",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/mvdcorput/node-resx-to-typescript/issues"
