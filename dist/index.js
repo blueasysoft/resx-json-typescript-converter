@@ -82,7 +82,7 @@ function execute(typeScriptResourcesNamespace, virtualResxFolder, virtualTypeScr
     function getProjectRoot() {
         var splittedDirName = __dirname.split('\\');
         var spliitedRootDirName = [];
-        for (var i = 0, length_2 = splittedDirName.length - 2; i < length_2; i++) {
+        for (var i = 0, length_2 = splittedDirName.length - 3; i < length_2; i++) {
             spliitedRootDirName.push(splittedDirName[i]);
         }
         return spliitedRootDirName.join('\\');
