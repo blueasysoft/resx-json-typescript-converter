@@ -80,7 +80,7 @@ export function execute(typeScriptResourcesNamespace: string, virtualResxFolder:
                     
         for(let j = 0, nrOfResources = resources.length; j < nrOfResources; j++) 
         {
-            content = content + '       public ' + resources[j].name + ': string = `' + resources[j].value + '`;\n';
+            content = content + '       public ' + decapitalizeFirstLetter(resources[j].name) + ': string = `' + resources[j].value + '`;\n';
         }
         
         content = content + '   }\n';
@@ -122,5 +122,9 @@ export function execute(typeScriptResourcesNamespace: string, virtualResxFolder:
         }
         
         return spliitedRootDirName.join('\\');
+    }
+
+    function decapitalizeFirstLetter(input: string) {
+        return input.charAt(0).toLowerCase() + input.slice(1);
     }
 }

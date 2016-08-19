@@ -56,7 +56,7 @@ function execute(typeScriptResourcesNamespace, virtualResxFolder, virtualTypeScr
             }
         }
         for (var j = 0, nrOfResources = resources.length; j < nrOfResources; j++) {
-            content = content + '       public ' + resources[j].name + ': string = `' + resources[j].value + '`;\n';
+            content = content + '       public ' + decapitalizeFirstLetter(resources[j].name) + ': string = `' + resources[j].value + '`;\n';
         }
         content = content + '   }\n';
         content = content + '}\n';
@@ -86,6 +86,9 @@ function execute(typeScriptResourcesNamespace, virtualResxFolder, virtualTypeScr
             spliitedRootDirName.push(splittedDirName[i]);
         }
         return spliitedRootDirName.join('\\');
+    }
+    function decapitalizeFirstLetter(input) {
+        return input.charAt(0).toLowerCase() + input.slice(1);
     }
 }
 exports.execute = execute;

@@ -8,7 +8,7 @@ To use this node module at a reference to your project package.json dependencies
 
 {
     "dependencies": {
-        "resx-to-typescript": "1.0.3"
+        "resx-to-typescript": "1.0.11"
     }
 }
 
@@ -28,7 +28,7 @@ where the parameters stand for:
 
 UPDATES:
 
-2016-08-19 Refactored code and added support for multi line resources. (v 1.0.10)
+2016-08-19 Refactored code and added support for multi line resources. (v 1.0.11)
 
 Voilá, the TypeScript models for your resx files are added to your project and ready to use in typescript development/mvc bundling.
 
