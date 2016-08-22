@@ -72,10 +72,11 @@ function execute(typeScriptResourcesNamespace, virtualResxFolder, virtualTypeScr
             else {
                 // Write the file to the given output folder.
                 var tsFileNameWithoutPath = tsFileName.substr(tsFileName.lastIndexOf('\\') + 1);
-                var outputFileName = projectRoot + virtualTypeScriptFolder + '\\' + tsFileNameWithoutPath;
+                var outputFileName = (projectRoot + virtualTypeScriptFolder + '\\' + tsFileNameWithoutPath).split('/').join('\\');
+                var relativeOutputFileName = virtualTypeScriptFolder + '/' + tsFileNameWithoutPath;
                 mkpath.sync(projectRoot + virtualTypeScriptFolder, '0700');
                 fs.writeFile(outputFileName, content, null);
-                addTypeScriptFile.execute(outputFileName);
+                addTypeScriptFile.execute(relativeOutputFileName);
             }
         }
     }
@@ -92,3 +93,4 @@ function execute(typeScriptResourcesNamespace, virtualResxFolder, virtualTypeScr
     }
 }
 exports.execute = execute;
+//# sourceMappingURL=index.js.map

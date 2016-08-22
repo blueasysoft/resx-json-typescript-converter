@@ -1,6 +1,6 @@
 {
   "name": "resx-to-typescript",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "Converts resx files to TypeScript models",
   "main": "dist/index.js",
   "scripts": {
@@ -13,7 +13,7 @@
     "typescript": "^1.8.10"
   },
   "dependencies": {
-    "add-typescript-file-to-project": "1.0.0",
+    "add-typescript-file-to-project": "1.0.1",
     "mkpath": "*",
     "recursive-search": "*",
     "xml2js": "*"

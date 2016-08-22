@@ -1,5 +1,5 @@
-declare var __dirname: string;
-declare var require: any
+declare const __dirname: string;
+declare const require: any;
 
 const addTypeScriptFile = require('add-typescript-file-to-project');
 const fs = require('fs');
@@ -10,7 +10,7 @@ const xml2js = require('xml2js');
 export function execute(typeScriptResourcesNamespace: string, virtualResxFolder: string, virtualTypeScriptFolder: string): void {
     let files: any = null;
     const virtualProjectRoot = '\\..\\..\\..\\';
-        
+
     if (virtualResxFolder === undefined || virtualResxFolder === '') {
         files = search.recursiveSearchSync(/.resx$/, __dirname + virtualProjectRoot );   
     } 
@@ -102,13 +102,14 @@ export function execute(typeScriptResourcesNamespace: string, virtualResxFolder:
             {
                 // Write the file to the given output folder.
                 const tsFileNameWithoutPath = tsFileName.substr(tsFileName.lastIndexOf('\\') + 1);
-                const outputFileName = projectRoot + virtualTypeScriptFolder + '\\' + tsFileNameWithoutPath;
-                
+                const outputFileName = (projectRoot + virtualTypeScriptFolder + '\\' + tsFileNameWithoutPath).split('/').join('\\');
+                const relativeOutputFileName = virtualTypeScriptFolder + '/' + tsFileNameWithoutPath;
+
                 mkpath.sync(projectRoot + virtualTypeScriptFolder, '0700');
                 
                 fs.writeFile(outputFileName, content, null); 
                 
-                addTypeScriptFile.execute(outputFileName);                          
+                addTypeScriptFile.execute(relativeOutputFileName);                          
             }
         }
     }

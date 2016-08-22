@@ -1,0 +1,13 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch Typescript",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceRoot}/test.ts",
+            "sourceMaps": true,
+            "outDir": "${workspaceRoot}/dist"
+        }
+    ]
+}
