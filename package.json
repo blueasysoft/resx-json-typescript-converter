@@ -4,7 +4,8 @@
   "description": "Converts resx files to TypeScript models",
   "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
   },
   "author": {
     "name": "Martijn van der Corput"
