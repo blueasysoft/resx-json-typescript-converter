@@ -8,7 +8,7 @@ To use this node module at a reference to your project package.json dependencies
 
 {
     "dependencies": {
-        "resx-to-typescript": "1.0.12"
+        "resx-to-typescript": "1.0.13"
     }
 }
 
@@ -22,7 +22,7 @@ resxToTypeScript.execute('exampleApp.resources', '/Resources', '/App/Resources')
 
 where the parameters stand for:
 
-'exampleApp.resources'  -> TypeScript module name / namespace for the resource models.
+'exampleApp.resources'  -> TypeScript namespace for the resource models.
 '/Resources'            -> Relative folder to scan for .resx files.
 '/App/Resources'        -> Output directory for TypeScript files
 

@@ -1,6 +1,6 @@
 {
   "name": "resx-to-typescript",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "Converts resx files to TypeScript models",
   "main": "dist/index.js",
   "scripts": {
