@@ -8,7 +8,7 @@ To use this node module at a reference to your project package.json dependencies
 
 {
     "dependencies": {
-        "resx-to-typescript": "1.0.13"
+        "resx-to-typescript": "1.0.14"
     }
 }
 
