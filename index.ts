@@ -94,7 +94,7 @@ export function execute(typeScriptResourcesNamespace: string, virtualResxFolder:
             if (virtualTypeScriptFolder === undefined || virtualTypeScriptFolder === '')
             {
                 // Write the file aside of the the resx file.
-                fs.writeFile(tsFileName, content, null);                           
+                fs.writeFileSync(tsFileName, content, null);                           
 
                 addTypeScriptFile.execute(tsFileName);                          
             }
@@ -107,7 +107,7 @@ export function execute(typeScriptResourcesNamespace: string, virtualResxFolder:
 
                 mkpath.sync(projectRoot + virtualTypeScriptFolder, '0700');
                 
-                fs.writeFile(outputFileName, content, null); 
+                fs.writeFileSync(outputFileName, content, null); 
                 
                 addTypeScriptFile.execute(relativeOutputFileName);                          
             }

@@ -66,7 +66,7 @@ function execute(typeScriptResourcesNamespace, virtualResxFolder, virtualTypeScr
             var tsFileName = resxFilename.replace('.resx', '.ts');
             if (virtualTypeScriptFolder === undefined || virtualTypeScriptFolder === '') {
                 // Write the file aside of the the resx file.
-                fs.writeFile(tsFileName, content, null);
+                fs.writeFileSync(tsFileName, content, null);
                 addTypeScriptFile.execute(tsFileName);
             }
             else {
@@ -75,7 +75,7 @@ function execute(typeScriptResourcesNamespace, virtualResxFolder, virtualTypeScr
                 var outputFileName = (projectRoot + virtualTypeScriptFolder + '\\' + tsFileNameWithoutPath).split('/').join('\\');
                 var relativeOutputFileName = virtualTypeScriptFolder + '/' + tsFileNameWithoutPath;
                 mkpath.sync(projectRoot + virtualTypeScriptFolder, '0700');
-                fs.writeFile(outputFileName, content, null);
+                fs.writeFileSync(outputFileName, content, null);
                 addTypeScriptFile.execute(relativeOutputFileName);
             }
         }
