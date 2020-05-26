@@ -1,3 +1,3 @@
-import program = require('./index');
+import resxConv from './dist/index.js';
 
-program.execute('app.resources', '/', '/App/Resources');
+resxConv('./test/', 'resOut');

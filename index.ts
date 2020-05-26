@@ -1,131 +1,443 @@
 declare const __dirname: string;
 declare const require: any;
 
-const addTypeScriptFile = require('add-typescript-file-to-project');
-const fs = require('fs');
+import * as fs from 'fs';
+import * as path from 'path';
+import fileseek from 'fileseek_plus';
+import { Parser as XmlParser } from 'xml2js';
+import { SlowBuffer } from 'buffer';
 const mkpath = require('mkpath');
-const search = require('recursive-search');
-const xml2js = require('xml2js');
 
-export function execute(typeScriptResourcesNamespace: string, virtualResxFolder: string, virtualTypeScriptFolder: string): void {
-    let files: any = null;
-    const virtualProjectRoot = '\\..\\..\\..\\';
+export interface res2TsOptions {
+    mergeCulturesToSingleFile: boolean;
+    generateTypeScriptResourceManager: boolean;
+    searchRecursive: boolean;
+    defaultResxCulture: string;
+}
 
-    if (virtualResxFolder === undefined || virtualResxFolder === '') {
-        files = search.recursiveSearchSync(/.resx$/, __dirname + virtualProjectRoot );   
-    } 
-    else {
-        virtualResxFolder = virtualResxFolder.replace(/\//g, '\\');
-        
-        let safeVirtualFolder = virtualResxFolder;
-        
-        if (safeVirtualFolder.charAt(0) === '\\')
-        {
-            safeVirtualFolder = safeVirtualFolder.substr(1);
-        } 
-        if (safeVirtualFolder.charAt(safeVirtualFolder.length-1) === '\\')
-        {
-            safeVirtualFolder = safeVirtualFolder.substr(0, safeVirtualFolder.length-1);
-        } 
-        
-        files = search.recursiveSearchSync(/.resx$/, __dirname + virtualProjectRoot + safeVirtualFolder );      
+class Options implements res2TsOptions {
+
+    public mergeCulturesToSingleFile: boolean = true;
+    public generateTypeScriptResourceManager: boolean = true;
+    public searchRecursive: boolean = false;
+    public defaultResxCulture: string = 'en';
+
+    constructor(optionsObject: res2TsOptions) {
+        if(optionsObject == null) {
+            return;
+        }
+
+        if(optionsObject.hasOwnProperty('mergeCulturesToSingleFile') && typeof optionsObject.mergeCulturesToSingleFile == 'boolean') {
+            this.mergeCulturesToSingleFile = optionsObject.mergeCulturesToSingleFile;
+        }
+
+        if(optionsObject.hasOwnProperty('generateTypeScriptResourceManager') && typeof optionsObject.generateTypeScriptResourceManager == 'boolean') {
+            this.generateTypeScriptResourceManager = optionsObject.generateTypeScriptResourceManager;
+        }
+
+        if(optionsObject.hasOwnProperty('searchRecursive') && typeof optionsObject.searchRecursive == 'boolean') {
+            this.searchRecursive = optionsObject.searchRecursive;
+        }
+
+        if(optionsObject.hasOwnProperty('defaultResxCulture') && typeof optionsObject.defaultResxCulture == 'string') {
+            this.defaultResxCulture = optionsObject.defaultResxCulture;
+        }
     }
-    
-    if (files !== undefined)
+}
+
+export default function execute(resxInput: string, outputFolder: string, options: res2TsOptions = null): void {
+
+    // Read and validate the users options
+    let OptionsInternal = new Options(options);
+
+
+    let files: string[] = [];
+    //const virtualProjectRoot = '\\..\\..\\..\\';
+
+    if (resxInput === undefined || resxInput === '') {
+        // files = search.recursiveSearchSync(/.resx$/, __dirname + virtualProjectRoot );
+        console.error('No input-path given');
+        return;
+    }
+
+
+    //resxInput = resxInput.replace(/\//g, '\\');
+
+    // let safeVirtualFolder = resxInput;
+
+    // if (safeVirtualFolder.charAt(0) === '\\')
+    // {
+    //     safeVirtualFolder = safeVirtualFolder.substr(1);
+    // }
+    // if (safeVirtualFolder.charAt(safeVirtualFolder.length-1) === '\\')
+    // {
+    //     safeVirtualFolder = safeVirtualFolder.substr(0, safeVirtualFolder.length-1);
+    // }
+
+    //files = search.recursiveSearchSync(/.resx$/, __dirname + virtualProjectRoot + safeVirtualFolder );
+
+    files = findFiles(resxInput, OptionsInternal.searchRecursive)
+
+
+    if(files.length < 1) {
+        console.log('No *.resx-files found in the input path.');
+        return;
+    }
+
+    let filesSorted = sortFilesByRes(files, OptionsInternal.defaultResxCulture);
+
+    let resourceNameList = generateJson(filesSorted, outputFolder, OptionsInternal.mergeCulturesToSingleFile)
+
+    if(OptionsInternal.generateTypeScriptResourceManager) {
+        generateResourceManager(resourceNameList);
+    }
+
+    return;
+}
+
+//-------------------------------------------------------------------
+// function convertResxToTypeScriptModel(resxInputFiles: string[], outputFolder: string, mergeCultures:  boolean, generateResourceManager: boolean): void {
+//     const parser = new XmlParser();
+
+//     for (let file of resxInputFiles)
+//     {
+//         fs.readFile(file, function(err: NodeJS.ErrnoException, data: Buffer) {
+//             parser.parseString(data, function (err: any, result: string) {
+//                 if (result !== undefined && result !== null)
+//                 {
+//                     convertXmlToTypeScriptModelFile(result, resxFilename, typeScriptResourcesNamespace, virtualTypeScriptFolder);
+//                 }
+//             });
+//         });
+//     }
+// }
+
+// function convertXmlToTypeScriptModelFile(xmlObject: any, resxFilename: string, typeScriptResourcesNamespace: string, virtualTypeScriptFolder: string): void {
+//     const projectRoot = getProjectRoot();
+//     const relativeResxFilename = resxFilename.replace(projectRoot, "").replace(/\\/g, "/");
+//     const className = resxFilename.substr(resxFilename.lastIndexOf("\\") + 1).replace('.resx', '');
+//     const resources: Array<any> = [];
+//     let content = '// TypeScript Resx model for: ' + relativeResxFilename + '\n' +
+//                   '// Auto generated by resx-to-typescript (npm package)' + '\n' + '\n';
+
+//     content = content + 'namespace ' + typeScriptResourcesNamespace + ' {\n';
+//     content = content + '   export class ' + className + ' {\n';
+
+//     if (xmlObject.root.data !== undefined) {
+//         for (let i = 0, nrOfResourcesInFile = xmlObject.root.data.length; i < nrOfResourcesInFile; i++)
+//         {
+//             const name = xmlObject.root.data[i].$.name;
+//             const value =  xmlObject.root.data[i].value.toString().replace(/'/g, "\\'");
+
+//             resources.push({ name: name, value: value });
+//         }
+//     }
+
+//     for(let j = 0, nrOfResources = resources.length; j < nrOfResources; j++)
+//     {
+//         content = content + '       public ' + decapitalizeFirstLetter(resources[j].name) + ': string = `' + resources[j].value + '`;\n';
+//     }
+
+//     content = content + '   }\n';
+//     content = content + '}\n';
+
+//     // Write model if resources found
+//     if (resources.length > 0) {
+//         const relativeTsFilename = relativeResxFilename.replace('.resx', '.ts');
+//         const tsFileName = resxFilename.replace('.resx', '.ts');
+
+//         if (virtualTypeScriptFolder === undefined || virtualTypeScriptFolder === '')
+//         {
+//             // Write the file aside of the the resx file.
+//             fs.writeFileSync(tsFileName, content, null);
+
+//             addTypeScriptFile.execute(tsFileName);
+//         }
+//         else
+//         {
+//             // Write the file to the given output folder.
+//             const tsFileNameWithoutPath = tsFileName.substr(tsFileName.lastIndexOf('\\') + 1);
+//             const outputFileName = (projectRoot + virtualTypeScriptFolder + '\\' + tsFileNameWithoutPath).split('/').join('\\');
+//             const relativeOutputFileName = virtualTypeScriptFolder + '/' + tsFileNameWithoutPath;
+
+//             mkpath.sync(projectRoot + virtualTypeScriptFolder, '0700');
+
+//             fs.writeFileSync(outputFileName, content, null);
+
+//             addTypeScriptFile.execute(relativeOutputFileName);
+//         }
+//     }
+// }
+
+// function getProjectRoot(): string {
+//     const splittedDirName = __dirname.split('\\');
+//     const spliitedRootDirName: Array<string> = [];
+
+//     for (let i = 0, length = splittedDirName.length - 3; i < length; i++) {
+//         spliitedRootDirName.push(splittedDirName[i]);
+//     }
+
+//     return spliitedRootDirName.join('\\');
+// }
+
+// function decapitalizeFirstLetter(input: string) {
+//     return input.charAt(0).toLowerCase() + input.slice(1);
+// }
+
+
+//-------------------------------------------------------------------
+
+
+let parser: XmlParser;
+
+function findFiles(resxInput: string, recursiveSearch: boolean): string[] {
+    let files: string [] = [];
+
+    if(resxInput == null) {
+        console.error('No input filepath given');
+        return files;
+    }
+
+    if(resxInput.endsWith('.resx') ) {
+        if(!fs.existsSync(resxInput)) {
+            console.warn('Specified file not found');
+            return files;
+        }
+        files.push(resxInput);
+        return files;
+    }
+
+    //TODO wait for the fileseek maintainer to merge my pull request
+    files = fileseek(resxInput, /.resx$/, recursiveSearch);
+
+    return files;
+}
+
+function sortFilesByRes(inputFiles: string [], defaultCulture: string): resxFiles {
+
+    let sorted: resxFiles = {}
+
+    for (let file of inputFiles)
     {
-        const filesAsString = JSON.stringify(files).replace('[', "").replace(']', "");
-        const splittedFiles = filesAsString.split(',');
-        
-        for (let i = 0, length = splittedFiles.length; i < length; i++)
-        {   
-            const resxFilename = splittedFiles[i].trim().replace(/"/g,"").replace(/\\\\/g,"\\");
-            
-            convertResxToTypeScriptModel(resxFilename, typeScriptResourcesNamespace, virtualTypeScriptFolder);
+        //Filename and Culture
+        let info = getResxFileInfo(file);
+
+        if(info.culture == null) {
+            info.culture = defaultCulture;
         }
+
+        if(!sorted.hasOwnProperty(info.name)) {
+            sorted[info.name] = {}
+        }
+
+        sorted[info.name][info.culture] = file;
     }
+
+    return sorted;
+}
+
+function generateJson(resxFiles: resxFiles, outputFolder: string, mergeCultures: boolean): resourceFileKeyCollection {
+    if(parser == undefined || parser == null) {
+        parser = new XmlParser()
+    }
+
+    //Create the Directory before we write to it
+    if(!fs.existsSync(outputFolder)) {
+        fs.mkdirSync(outputFolder, {recursive: true})
+    }
+
+    let resourceFileKeyCollection: resourceFileKeyCollection = {};
+
+    for (const resxFileName in resxFiles) {
+        let cultureFiles = resxFiles[resxFileName];
+
+        let resourceKeys: resxFileKeys;
+
+        if(mergeCultures) {
+            resourceKeys = generateJsonMerged(outputFolder, cultureFiles, resxFileName);
+        } else {
+            resourceKeys = generateJsonSingle(outputFolder, cultureFiles, resxFileName);
+        }
+
+        resourceFileKeyCollection[resxFileName] = resourceKeys;
+    }
+
+    return resourceFileKeyCollection;
+}
+
+function generateJsonMerged(outputFolder: string, cultureFiles: resxFileCulture, resourceName: string): resxFileKeys {
+
+    let resKeys: string[] = [];
+    let header = `// JSON for Resx: ${resourceName}
+            // Auto generated by resx-to-typescript (npm package)
+
+        `;
+
+    let o: {[key: string]: resxKeyValues} = {};
     
-    function convertResxToTypeScriptModel(resxFilename: string, typeScriptResourcesNamespace: string, virtualTypeScriptFolder: string): void {
-        fs.readFile(resxFilename, function(err: any, data: any) {
-            const parser = new xml2js.Parser();
+    for (let culture in cultureFiles)
+    {
+        let file = cultureFiles[culture];
 
-            parser.parseString(data, function (err: any, result: any) {
-                 if (result !== undefined)
-                 {
-                     convertXmlToTypeScriptModelFile(result, resxFilename, typeScriptResourcesNamespace, virtualTypeScriptFolder);                       
-                 }
-            });  
-        });    
+        let resxContentObject = getResxKeyValues(file);
+
+        o[culture] = resxContentObject;
+
+        // Add the ResourceKeys to the key collection
+        resKeys.push(...resxContentObject.keys)
     }
 
-    function convertXmlToTypeScriptModelFile(xmlObject: any, resxFilename: string, typeScriptResourcesNamespace: string, virtualTypeScriptFolder: string): void {
-        const projectRoot = getProjectRoot();
-        const relativeResxFilename = resxFilename.replace(projectRoot, "").replace(/\\/g, "/");
-        const className = resxFilename.substr(resxFilename.lastIndexOf("\\") + 1).replace('.resx', '');
-        const resources: Array<any> = [];
-        let content = '// TypeScript Resx model for: ' + relativeResxFilename + '\n' + 
-                      '// Auto generated by resx-to-typescript (npm package)' + '\n' + '\n';
+    //Json stringify
+    let content: string = header + JSON.stringify(o);
 
-        content = content + 'namespace ' + typeScriptResourcesNamespace + ' {\n';
-        content = content + '   export class ' + className + ' {\n';
+    //Write the file
+    let targetFilePath = `${outputFolder}/${resourceName}.json `
+    fs.writeFileSync(outputFolder, content)
 
-        if (xmlObject.root.data !== undefined) {
-            for (let i = 0, nrOfResourcesInFile = xmlObject.root.data.length; i < nrOfResourcesInFile; i++)
-            {
-                const name = xmlObject.root.data[i].$.name;       
-                const value =  xmlObject.root.data[i].value.toString().replace(/'/g, "\\'");   
-                     
-                resources.push({ name: name, value: value });  
-            }           
-        }
-                    
-        for(let j = 0, nrOfResources = resources.length; j < nrOfResources; j++) 
-        {
-            content = content + '       public ' + decapitalizeFirstLetter(resources[j].name) + ': string = `' + resources[j].value + '`;\n';
-        }
-        
-        content = content + '   }\n';
-        content = content + '}\n';
-        
-        // Write model if resources found
-        if (resources.length > 0) {
-            const relativeTsFilename = relativeResxFilename.replace('.resx', '.ts');
-            const tsFileName = resxFilename.replace('.resx', '.ts');
-            
-            if (virtualTypeScriptFolder === undefined || virtualTypeScriptFolder === '')
-            {
-                // Write the file aside of the the resx file.
-                fs.writeFileSync(tsFileName, content, null);                           
+    return {
+        filename: resourceName,
+        keys: new Set(resKeys)
+    }
+}
 
-                addTypeScriptFile.execute(tsFileName);                          
+function generateJsonSingle(outputFolder: string, cultureFiles: resxFileCulture, resourceName: string): resxFileKeys {
+    let resKeys: string[] = [];
+
+    for (let culture in cultureFiles)
+    {
+        let header = `// JSON for Resx: ${resourceName}, culture: ${culture}
+            // Auto generated by resx-to-typescript (npm package)
+
+        `;
+
+        let file = cultureFiles[culture];
+
+        let resxContentObject = getResxKeyValues(file);
+
+        let o: {[key: string]: resxKeyValues} = {};
+        o[culture] = resxContentObject;
+
+        //Json strinify
+        let content: string = header + JSON.stringify(o);
+
+        //Write the file
+        let targetFilePath = `${outputFolder}/${resourceName}.${culture}.json `
+        fs.writeFileSync(outputFolder, content)
+
+        // Add the ResourceKeys to the key collection
+        resKeys.push(...resxContentObject.keys)
+    }
+
+    return {
+        filename: resourceName,
+        keys: new Set(resKeys)
+    }
+}
+
+function generateResourceManager(resourceNameList: resourceFileKeyCollection) {
+
+    //TODO
+
+}
+
+function getResxFileInfo(filePath: string): resxFileInfo {
+    let fileCulture: string = null;
+    let nameClean: string;
+
+    let filename: string = path.basename(filePath);
+    let filenameSplit = filename.split('.');
+    filenameSplit.pop();
+
+    if(filenameSplit.length > 2) {
+        fileCulture = filenameSplit.pop();
+    }
+
+    nameClean = filenameSplit.join('.');
+
+    return {
+        name: nameClean,
+        culture: fileCulture
+    }
+}
+
+function getResxKeyValues(filepath: string): resxKeyValues {
+
+    const resources: resxKeyValues = {};
+
+    parser.reset();
+
+    fs.readFile(filepath, function(err: NodeJS.ErrnoException, data: Buffer) {
+        parser.parseString(data, function (err: any, xmlObject: any) {
+
+            if(xmlObject == undefined ||
+                xmlObject == null ||
+                !xmlObject.hasOwnProperty('root') ||
+                xmlObject.root.hasOwnProperty('data') ||
+                xmlObject.root.data == undefined) {
+
+                return;
             }
-            else
+
+            for (let i in data)
             {
-                // Write the file to the given output folder.
-                const tsFileNameWithoutPath = tsFileName.substr(tsFileName.lastIndexOf('\\') + 1);
-                const outputFileName = (projectRoot + virtualTypeScriptFolder + '\\' + tsFileNameWithoutPath).split('/').join('\\');
-                const relativeOutputFileName = virtualTypeScriptFolder + '/' + tsFileNameWithoutPath;
+                const name = xmlObject.root.data[i].$.name;
+                const value =  xmlObject.root.data[i].value.toString().replace(/'/g, "\\'");
 
-                mkpath.sync(projectRoot + virtualTypeScriptFolder, '0700');
-                
-                fs.writeFileSync(outputFileName, content, null); 
-                
-                addTypeScriptFile.execute(relativeOutputFileName);                          
+                resources[name] = value;
             }
-        }
-    }
-    
-    function getProjectRoot(): string {
-        const splittedDirName = __dirname.split('\\');
-        const spliitedRootDirName: Array<string> = [];
-        
-        for (let i = 0, length = splittedDirName.length - 3; i < length; i++) {
-            spliitedRootDirName.push(splittedDirName[i]);
-        }
-        
-        return spliitedRootDirName.join('\\');
-    }
 
-    function decapitalizeFirstLetter(input: string) {
-        return input.charAt(0).toLowerCase() + input.slice(1);
-    }
+            // // Write model if resources found
+            // if (resources.length > 0) {
+            //     const relativeTsFilename = relativeResxFilename.replace('.resx', '.ts');
+            //     const tsFileName = resxFilename.replace('.resx', '.ts');
+
+            //     if (virtualTypeScriptFolder === undefined || virtualTypeScriptFolder === '')
+            //     {
+            //         // Write the file aside of the the resx file.
+            //         fs.writeFileSync(tsFileName, content, null);
+            //     }
+            //     else
+            //     {
+            //         // Write the file to the given output folder.
+            //         const tsFileNameWithoutPath = tsFileName.substr(tsFileName.lastIndexOf('\\') + 1);
+            //         const outputFileName = (projectRoot + virtualTypeScriptFolder + '\\' + tsFileNameWithoutPath).split('/').join('\\');
+            //         const relativeOutputFileName = virtualTypeScriptFolder + '/' + tsFileNameWithoutPath;
+
+            //         mkpath.sync(projectRoot + virtualTypeScriptFolder, '0700');
+
+            //         fs.writeFileSync(outputFileName, content, null);
+            //     }
+            // }
+            // convertXmlToTypeScriptModelFile(xmlObject, resxFilename, typeScriptResourcesNamespace, virtualTypeScriptFolder);
+
+        });
+    });
+
+    return resources;
+}
+
+interface resxFileInfo {
+    name: string;
+    culture: string;
+}
+
+interface resxFiles {
+    [key: string]: resxFileCulture;
+}
+
+interface resxFileCulture {
+    [key: string]: string;
+}
+
+interface resxKeyValues {
+    [key: string]: string;
+}
+
+interface resxFileKeys {
+    filename: string;
+    keys: Set<string>;
+}
+
+interface resourceFileKeyCollection {
+    [resourceFileName: string]: resxFileKeys
 }
