@@ -1,5 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const index_js_1 = require("./dist/index.js");
-index_js_1.default('./test/', 'resOut');
+const index_1 = require("./index");
+index_1.default('./test/', 'resOut', { defaultResxCulture: 'de', mergeCulturesToSingleFile: true, generateTypeScriptResourceManager: true, searchRecursive: true });
 //# sourceMappingURL=test.js.map

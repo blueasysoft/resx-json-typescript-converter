@@ -16,8 +16,7 @@
     "typescript": "^3.9.3"
   },
   "dependencies": {
-    "fileseek": "^1.0.1",
-    "mkpath": "*",
+    "fileseek_plus": "^1.0.4",
     "xml2js": "*"
   },
   "repository": {
