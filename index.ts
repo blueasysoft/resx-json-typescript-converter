@@ -43,7 +43,7 @@ class Options implements res2TsOptions {
     }
 }
 
-export default function execute(resxInput: string, outputFolder: string, options: res2TsOptions = null): void {
+export default function execute(resxInput: string | string[], outputFolder: string, options: res2TsOptions = null): void {
 
     // Read and validate the users options
     let OptionsInternal = new Options(options);
@@ -55,8 +55,7 @@ export default function execute(resxInput: string, outputFolder: string, options
         return;
     }
 
-    // Normalize the input and output path
-    resxInput = path.normalize(resxInput);
+    // Normalize the output path
     outputFolder = path.normalize(outputFolder);
 
     // Get the resx-file(s) from the input path
@@ -86,25 +85,48 @@ export default function execute(resxInput: string, outputFolder: string, options
 
 let parser: XmlParser;
 
-function findFiles(resxInput: string, recursiveSearch: boolean): string[] {
-    let files: string [] = [];
-
+function findFiles(resxInput: string | string[], recursiveSearch: boolean): string[] {
+    
     if(resxInput == null) {
         console.error('No input filepath given');
-        return files;
+        return [];
     }
+    
+    if(typeof resxInput == 'string') {
+        return getFilesForPath(resxInput, recursiveSearch);
+    }
+    
+    if(!Array.isArray(resxInput)) {
+        console.warn('The given input path is neither an string[] nor a single string');
+        return [];
+    }
+    
+    let files: string [] = [];
+    for(let inPath of resxInput) {
+        let filesInPath = getFilesForPath(inPath, recursiveSearch);
+        for(let file of filesInPath) {
+            if(!files.includes(file)) {
+                files.push(file);
+            }
+        }
+    }
+    return files;
+}
 
-    if(resxInput.endsWith('.resx') ) {
-        if(!fs.existsSync(resxInput)) {
-            console.warn('Specified file not found');
+function getFilesForPath(inputPath: string, recursiveSearch: boolean): string[]{
+    let files: string [] = [];
+
+    if(inputPath.endsWith('.resx') ) {
+        if(!fs.existsSync(inputPath)) {
+            console.warn(`The file or path '${inputPath}' could not be found.`);
             return files;
         }
-        files.push(resxInput);
+        files.push(inputPath);
         return files;
     }
 
     //TODO wait for the fileseek maintainer to merge my pull request
-    files = fileseek(resxInput, /.resx$/, recursiveSearch);
+    files = fileseek(inputPath, /.resx$/, recursiveSearch);
 
     return files;
 }

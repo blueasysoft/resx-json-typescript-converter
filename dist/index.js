@@ -36,8 +36,7 @@ function execute(resxInput, outputFolder, options = null) {
         console.error('No input-path given');
         return;
     }
-    // Normalize the input and output path
-    resxInput = path.normalize(resxInput);
+    // Normalize the output path
     outputFolder = path.normalize(outputFolder);
     // Get the resx-file(s) from the input path
     let files = [];
@@ -60,21 +59,40 @@ function execute(resxInput, outputFolder, options = null) {
 exports.default = execute;
 let parser;
 function findFiles(resxInput, recursiveSearch) {
-    let files = [];
     if (resxInput == null) {
         console.error('No input filepath given');
-        return files;
+        return [];
     }
-    if (resxInput.endsWith('.resx')) {
-        if (!fs.existsSync(resxInput)) {
-            console.warn('Specified file not found');
+    if (typeof resxInput == 'string') {
+        return getFilesForPath(resxInput, recursiveSearch);
+    }
+    if (!Array.isArray(resxInput)) {
+        console.warn('The given input path is neither an string[] nor a single string');
+        return [];
+    }
+    let files = [];
+    for (let inPath of resxInput) {
+        let filesInPath = getFilesForPath(inPath, recursiveSearch);
+        for (let file of filesInPath) {
+            if (!files.includes(file)) {
+                files.push(file);
+            }
+        }
+    }
+    return files;
+}
+function getFilesForPath(inputPath, recursiveSearch) {
+    let files = [];
+    if (inputPath.endsWith('.resx')) {
+        if (!fs.existsSync(inputPath)) {
+            console.warn(`The file or path '${inputPath}' could not be found.`);
             return files;
         }
-        files.push(resxInput);
+        files.push(inputPath);
         return files;
     }
     //TODO wait for the fileseek maintainer to merge my pull request
-    files = fileseek_plus_1.default(resxInput, /.resx$/, recursiveSearch);
+    files = fileseek_plus_1.default(inputPath, /.resx$/, recursiveSearch);
     return files;
 }
 function sortFilesByRes(inputFiles, defaultCulture) {
