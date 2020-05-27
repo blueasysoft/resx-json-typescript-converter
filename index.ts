@@ -5,7 +5,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 import fileseek from 'fileseek_plus';
 import { Parser as XmlParser } from 'xml2js';
-import { SlowBuffer } from 'buffer';
 
 export interface res2TsOptions {
     mergeCulturesToSingleFile: boolean;
