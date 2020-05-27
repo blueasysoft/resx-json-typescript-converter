@@ -78,7 +78,7 @@ export default function execute(resxInput: string, outputFolder: string, options
 
     // Generate the resource-manager (if set in the options)
     if(OptionsInternal.generateTypeScriptResourceManager) {
-        generateResourceManager(resourceNameList);
+        generateResourceManager(outputFolder, resourceNameList, OptionsInternal.mergeCulturesToSingleFile, OptionsInternal.defaultResxCulture);
     }
 
     return;
@@ -177,7 +177,11 @@ function generateJsonMerged(outputFolder: string, cultureFiles: resxFileCulture,
         o[culture] = resxContentObject;
 
         // Add the ResourceKeys to the key collection
-        resKeys = resKeys.concat(Object.keys(resxContentObject))
+        for(let key of Object.keys(resxContentObject)){
+            if(!resKeys.includes(key)) {
+                resKeys.push(key);
+            }
+        }
     }
 
     //Json stringify
@@ -189,13 +193,15 @@ function generateJsonMerged(outputFolder: string, cultureFiles: resxFileCulture,
     fs.writeFileSync(targetPath, content, {encoding: 'utf-8'});
 
     return {
-        filename: resourceName,
-        keys: new Set(resKeys)
+        resourcename: resourceName,
+        generatedFiles: [targetFileName],
+        resxKeys: resKeys
     }
 }
 
 function generateJsonSingle(outputFolder: string, cultureFiles: resxFileCulture, resourceName: string): resxFileKeys {
     let resKeys: string[] = [];
+    let targetFiles: string[] = [];
 
     for (let culture in cultureFiles)
     {
@@ -214,20 +220,153 @@ function generateJsonSingle(outputFolder: string, cultureFiles: resxFileCulture,
         let targetPath = path.join(outputFolder, targetFileName);
         fs.writeFileSync(targetPath, content, {encoding: 'utf-8'});
 
+        targetFiles.push(targetFileName);
+
         // Add the ResourceKeys to the key collection
-        resKeys = resKeys.concat(Object.keys(resxContentObject))
+        for(let key of Object.keys(resxContentObject)){
+            if(!resKeys.includes(key)) {
+                resKeys.push(key);
+            }
+        }
     }
 
     return {
-        filename: resourceName,
-        keys: new Set(resKeys)
+        resourcename: resourceName,
+        generatedFiles: targetFiles,
+        resxKeys: resKeys
     }
 }
 
-function generateResourceManager(resourceNameList: resourceFileKeyCollection) {
+function generateResourceManager(outputFolder: string, resourceNameList: resourceFileKeyCollection, isResourcesMergedByCulture: boolean, defaultCulture: string) {
+    
+    let classesString: string = '';
+    let classInstancesString: string ='';
 
-    //TODO
+    for (let resourceInfo of Object.values(resourceNameList)) {
 
+        let resourceName = resourceInfo.resourcename;
+
+        classInstancesString += `
+    private _${resourceName}: ${resourceName} = new ${resourceName}(this);
+    get ${resourceName}(): ${resourceName} {
+        return this._${resourceName};
+    }
+    `;
+
+        let resourceGetters: string = '';
+        for (let resxIdentifier of resourceInfo.resxKeys){
+            resourceGetters += `
+    get ${resxIdentifier}(): string {
+        return this.get('${resxIdentifier}');
+    }
+    `;
+        }
+
+        if(isResourcesMergedByCulture) {
+            classesString += `
+import * as resx${resourceName} from './${resourceInfo.generatedFiles[0]}';
+
+export class ${resourceName} extends resourceFile {
+
+    constructor(resourceManager: resourceManager) {
+        super(resourceManager);
+        this.resources = resx${resourceName};
+    }
+    ${resourceGetters}
+}
+ `;
+        } else {
+            let importStatements: string = '';
+            let importNames: string[] = [];
+            let resourceConstruction: string = '';
+
+
+            for(let filename of resourceInfo.generatedFiles) {
+                let importname = '' + filename;
+                importname.replace('.', '_');
+                importNames.push(importname);
+                importStatements += `
+                import * as ${importname} from './${filename}'`;
+            }
+
+            resourceConstruction = importNames.join(', ');
+
+            classesString = `
+${importStatements}
+
+export class P3JS_1 extends resourceFile {
+
+    constructor(resourceManager: resourceManager) {
+        super(resourceManager);
+        this.resources = Object.assign(${resourceConstruction});
+    }
+
+    ${resourceGetters}
+}
+`;
+        }
+
+    }
+
+    let resxManagerString = `
+/**
+ * This class gives you type-hinting for the automatic generated resx-json files
+ */
+
+export default class resourceManager {
+
+    public language: string;
+
+    constructor(language: string) {
+        this.language = language;
+    }
+
+    public setLanguage(language: string) {
+        this.language = language;
+    };
+
+    // Generated class instances start
+    ${classInstancesString}
+    // Gen end
+}
+
+abstract class resourceFile {
+    protected resMan: resourceManager;
+    protected resources: any = {};
+
+    constructor(resourceManager: resourceManager) {
+        this.resMan = resourceManager;
+    }
+
+    public get(resKey: string) {
+        let language = this.resMan.language;
+
+        // Check if the language exists for this resource and if the language has an corresponsing key
+        if (this.resources.hasOwnProperty(language) && this.resources[language].hasOwnProperty(resKey)) {
+            return this.resources[language][resKey];
+        }
+
+        // If no entry could be found in the currently active langugae, try the default language
+        if (this.resources.hasOwnProperty('${defaultCulture}') && this.resources.${defaultCulture}.hasOwnProperty(resKey)) {
+            console.log(\`No text resource in the language "\${language}" with the key "\${resKey}".\`);
+            return this.resources.${defaultCulture}[resKey];
+        }
+
+        // If there is still no resource found output a warning and return the key.
+        console.warn(\`No text-resource for the key \${resKey} found.\`);
+        return resKey;
+    };
+}
+
+// Gen Classes start
+${classesString}
+// Gen Classes end
+`;
+
+    //Write the file
+    let targetFileName = `resourceManager.ts `;
+    let targetPath = path.join(outputFolder, targetFileName);
+    fs.writeFileSync(targetPath, resxManagerString, {encoding: 'utf-8'});
 }
 
 function getResxFileInfo(filePath: string): resxFileInfo {
@@ -300,8 +439,9 @@ interface resxKeyValues {
 }
 
 interface resxFileKeys {
-    filename: string;
-    keys: Set<string>;
+    resourcename: string;
+    generatedFiles: string[];
+    resxKeys: string[];
 }
 
 interface resourceFileKeyCollection {
