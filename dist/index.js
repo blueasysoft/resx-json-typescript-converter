@@ -149,8 +149,9 @@ function generateJsonMerged(outputFolder, cultureFiles, resourceName) {
     //Json stringify
     let content = JSON.stringify(o);
     //Write the file
-    let targetFileName = `${resourceName}.json `;
+    let targetFileName = `${resourceName}.json`;
     let targetPath = path.join(outputFolder, targetFileName);
+    targetPath = path.normalize(targetPath);
     fs.writeFileSync(targetPath, content, { encoding: 'utf-8' });
     return {
         resourcename: resourceName,
@@ -169,8 +170,9 @@ function generateJsonSingle(outputFolder, cultureFiles, resourceName) {
         //Json strinify
         let content = JSON.stringify(o);
         //Write the file
-        let targetFileName = `${resourceName}.${culture}.json `;
+        let targetFileName = `${resourceName}.${culture}.json`;
         let targetPath = path.join(outputFolder, targetFileName);
+        targetPath = path.normalize(targetPath);
         fs.writeFileSync(targetPath, content, { encoding: 'utf-8' });
         targetFiles.push(targetFileName);
         // Add the ResourceKeys to the key collection
@@ -301,8 +303,9 @@ ${classesString}
 // Gen Classes end
 `;
     //Write the file
-    let targetFileName = `resourceManager.ts `;
+    let targetFileName = `resourceManager.ts`;
     let targetPath = path.join(outputFolder, targetFileName);
+    targetPath = path.normalize(targetPath);
     fs.writeFileSync(targetPath, resxManagerString, { encoding: 'utf-8' });
 }
 function getResxFileInfo(filePath) {
