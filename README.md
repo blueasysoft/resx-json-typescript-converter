@@ -1,38 +1,42 @@
-# node-resx-to-typescript
+# resx-json-typescript-converter
+Source code for node module: (resx-json-typescript-converter)[#]
 
-Source code for node module: resx-to-typescript
+## Description
+A node module for generating json-files and (optionaly) an additional TypeScript resourceManager based on one or multiple resx-files.  
+This module is usualy used in grunt or other taskrunners during development to make text resources from resx-files available in JavaScript and Typescript
 
-Node module for generating TypeScript (models) files based on resx files.
+## Installation
+npm install --save-dev resx-json-typescript-converter
 
-To use this node module at a reference to your project package.json dependencies.
+## Usage
+The resx-json-typescript-converter is exported as a commonjs module. To use it in your environment (eg. in grunt) you need to require or import the corresponding function from the module.  
+Example usage:
+´´´
+let resxConverter = require('resx-json-converter');
+resxConverter.convertResx(['./App_GlobalResources/ResourceBase.en.resx', './App_GlobalResources/ResourceBase.fr.resx', './App_GlobalResources/ResourceBase.resx'], './App_Assets/TS/resources', { defaultResxCulture: 'de', mergeCulturesToSingleFile: true, generateTypeScriptResourceManager: true, searchRecursive: true });
+´´´
 
-{
-    "dependencies": {
-        "resx-to-typescript": "1.0.16"
-    }
+### Parameters
+A call to the *convertResx* function has a few required and optional parameters:  
+**resxInput** - A single string or an array of strings pointing either to individual resx files or to folders containing resx files that should be included.  
+**outputFolder** - The output folder where the generated *.json files and the optionaly generated resourceManager should be created/saved.  
+**options** - The option for the conversion is an Object with following keys:  
+```
+{ 
+    defaultResxCulture: 'de', 
+    mergeCulturesToSingleFile: true, 
+    generateTypeScriptResourceManager: true, 
+    searchRecursive: true 
 }
+```
+#### Option-Parameters
+**defaultResxCulture** - The default resx culture is used in two cases. First there might be resx-files that do not contain a culture in their filename (eg. *ResourceBase.resx*, as oposed to *ResourceBase.fr.resx* fr is used as culture of the resource file). For this filees the defuatResxCulture is used. *(Default: 'en')*  
+**mergeCulturesToSingleFile** - Combine teh cultures of a resource file into one json file or export a seperate json for ech culture version. *(Default: true)*  
+**generateTypeScriptResourceManager** - Generate a TypeScript respurceManager module that imports the json files for simple access to the resources in TypeScript. *(Default: true)*  
+**searchRecursive** - Determines if input folders should be searched for *.resx files recursivly. *(Default: true)*  
 
-The script requires one parameter, the virtual path to the TypeScript file you want to add.
+### Usage of the JSON-files
+If you are not using the generated TypeScript resourceManager you are free to import, ajax-load or otherwise use the json files.
 
-So, to use the module in for instance a gulp task:
-
-var resxToTypeScript = require('resx-to-typescript');
-    
-resxToTypeScript.execute('exampleApp.resources', '/Resources', '/App/Resources');
-
-where the parameters stand for:
-
-'exampleApp.resources'  -> TypeScript namespace for the resource models.
-'/Resources'            -> Relative folder to scan for .resx files.
-'/App/Resources'        -> Output directory for TypeScript files
-
-Voilá, the TypeScript models for your resx files are added to your project and ready to use in typescript development/mvc bundling.
-
-UPDATES:
-
-2017-25-01 Removed runtime node deprecation warning. (v 1.0.15)
-2016-08-19 Refactored code and added support for multi line resources. (v 1.0.12)
-
-
-
-
+### Usage of the TypeScript resourceManager
+*Needs some documentation*
