@@ -6,7 +6,9 @@ A node module for generating json-files and (optionaly) an additional TypeScript
 This module is usualy used in grunt or other taskrunners during development to make text resources from resx-files available in JavaScript and Typescript
 
 ## Installation
+```
 npm install --save-dev resx-json-typescript-converter
+```
 
 ## Usage
 The resx-json-typescript-converter is exported as a commonjs module. To use it in your environment (eg. in grunt) you need to require or import the corresponding function from the module.  
