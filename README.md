@@ -1,5 +1,5 @@
 # resx-json-typescript-converter
-Source code for node module: (resx-json-typescript-converter)[#]
+Source code for node module: [resx-json-typescript-converter](#)
 
 ## Description
 A node module for generating json-files and (optionaly) an additional TypeScript resourceManager based on one or multiple resx-files.  
@@ -10,7 +10,7 @@ npm install --save-dev resx-json-typescript-converter
 
 ## Usage
 The resx-json-typescript-converter is exported as a commonjs module. To use it in your environment (eg. in grunt) you need to require or import the corresponding function from the module.  
-Example usage:
+Example usage:   
 ´´´
 let resxConverter = require('resx-json-converter');
 resxConverter.convertResx(['./App_GlobalResources/ResourceBase.en.resx', './App_GlobalResources/ResourceBase.fr.resx', './App_GlobalResources/ResourceBase.resx'], './App_Assets/TS/resources', { defaultResxCulture: 'de', mergeCulturesToSingleFile: true, generateTypeScriptResourceManager: true, searchRecursive: true });
