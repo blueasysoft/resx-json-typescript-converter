@@ -11,10 +11,10 @@ npm install --save-dev resx-json-typescript-converter
 ## Usage
 The resx-json-typescript-converter is exported as a commonjs module. To use it in your environment (eg. in grunt) you need to require or import the corresponding function from the module.  
 Example usage:   
-´´´
+```
 let resxConverter = require('resx-json-converter');
 resxConverter.convertResx(['./App_GlobalResources/ResourceBase.en.resx', './App_GlobalResources/ResourceBase.fr.resx', './App_GlobalResources/ResourceBase.resx'], './App_Assets/TS/resources', { defaultResxCulture: 'de', mergeCulturesToSingleFile: true, generateTypeScriptResourceManager: true, searchRecursive: true });
-´´´
+```
 
 ### Parameters
 A call to the *convertResx* function has a few required and optional parameters:  
