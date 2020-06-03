@@ -207,13 +207,13 @@ function generateResourceManager(outputFolder, resourceNameList, isResourcesMerg
         }
         if (isResourcesMergedByCulture) {
             classesString += `
-import * as resx${resourceName} from './${resourceInfo.generatedFiles[0]}';
+import * as resx${resourceName} from './${resourceInfo.generatedFiles[0].trim()}';
 
 export class ${resourceName} extends resourceFile {
 
     constructor(resourceManager: resourceManager) {
         super(resourceManager);
-        this.resources = resx${resourceName};
+        this.resources = (<any>resx${resourceName}).default;
     }
     ${resourceGetters}
 }
@@ -270,7 +270,7 @@ export default class resourceManager {
 
 abstract class resourceFile {
     protected resMan: resourceManager;
-    protected resources: any = {};
+    protected resources: { [langKey: string]: { [resKey: string]: string } } = {};
 
     constructor(resourceManager: resourceManager) {
         this.resMan = resourceManager;
