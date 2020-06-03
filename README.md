@@ -1,5 +1,5 @@
 # resx-json-typescript-converter
-Source code for node module: [resx-json-typescript-converter](#)
+Source code for node module: [resx-json-typescript-converter](https://www.npmjs.com/package/resx-json-typescript-converter)
 
 ## Description
 A node module for generating json-files and (optionaly) an additional TypeScript resourceManager based on one or multiple resx-files.  
