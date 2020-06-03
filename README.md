@@ -33,7 +33,7 @@ A call to the *convertResx* function has a few required and optional parameters:
 **defaultResxCulture** - The default resx culture is used in two cases. First there might be resx-files that do not contain a culture in their filename (eg. *ResourceBase.resx*, as oposed to *ResourceBase.fr.resx* fr is used as culture of the resource file). For this filees the defuatResxCulture is used. *(Default: 'en')*  
 **mergeCulturesToSingleFile** - Combine teh cultures of a resource file into one json file or export a seperate json for ech culture version. *(Default: true)*  
 **generateTypeScriptResourceManager** - Generate a TypeScript respurceManager module that imports the json files for simple access to the resources in TypeScript. *(Default: true)*  
-**searchRecursive** - Determines if input folders should be searched for *.resx files recursivly. *(Default: true)*  
+**searchRecursive** - Determines if input folders should be searched for *.resx files recursivly. *(Default: false)*  
 
 ### Usage of the JSON-files
 If you are not using the generated TypeScript resourceManager you are free to import, ajax-load or otherwise use the json files.
