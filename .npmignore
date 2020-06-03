@@ -33,5 +33,7 @@ node_modules
 .node_repl_history
 
 # Files that are not necessary for the NPM package
+.vscode/*
+test/*
 test.ts
 dist/test*
