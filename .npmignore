@@ -34,3 +34,4 @@ node_modules
 
 # Files that are not necessary for the NPM package
 test.ts
+dist/test*
