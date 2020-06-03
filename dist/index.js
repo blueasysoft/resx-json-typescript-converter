@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.convertResx = void 0;
 const fs = require("fs");
 const path = require("path");
 const fileseek_plus_1 = require("fileseek_plus");
@@ -27,7 +28,7 @@ class Options {
         }
     }
 }
-function execute(resxInput, outputFolder, options = null) {
+function convertResx(resxInput, outputFolder, options = null) {
     // Read and validate the users options
     let OptionsInternal = new Options(options);
     // Check if an Input-Path was given
@@ -56,7 +57,7 @@ function execute(resxInput, outputFolder, options = null) {
     }
     return;
 }
-exports.default = execute;
+exports.convertResx = convertResx;
 let parser;
 function findFiles(resxInput, recursiveSearch) {
     if (resxInput == null) {

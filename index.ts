@@ -43,7 +43,7 @@ class Options implements res2TsOptions {
     }
 }
 
-export default function execute(resxInput: string | string[], outputFolder: string, options: res2TsOptions = null): void {
+export function convertResx(resxInput: string | string[], outputFolder: string, options: res2TsOptions = null): void {
 
     // Read and validate the users options
     let OptionsInternal = new Options(options);

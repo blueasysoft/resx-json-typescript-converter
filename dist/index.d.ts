@@ -4,4 +4,4 @@ export interface res2TsOptions {
     searchRecursive: boolean;
     defaultResxCulture: string;
 }
-export default function execute(resxInput: string | string[], outputFolder: string, options?: res2TsOptions): void;
+export declare function convertResx(resxInput: string | string[], outputFolder: string, options?: res2TsOptions): void;
