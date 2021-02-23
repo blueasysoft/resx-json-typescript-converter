@@ -369,10 +369,10 @@ abstract class resourceFile {
             return this.resources[language][resKey];
         }
 
-        // If no entry could be found in the currently active langugae, try the default language
-        if (this.resources.hasOwnProperty('${defaultCulture}') && this.resources.${defaultCulture}.hasOwnProperty(resKey)) {
+        // If no entry could be found in the currently active language, try the default language
+        if (this.resources.hasOwnProperty('${defaultCulture}') && this.resources['${defaultCulture}'].hasOwnProperty(resKey)) {
             console.log(\`No text resource in the language "\${language}" with the key "\${resKey}".\`);
-            return this.resources.${defaultCulture}[resKey];
+            return this.resources['${defaultCulture}'][resKey];
         }
 
         // If there is still no resource found output a warning and return the key.
