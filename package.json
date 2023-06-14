@@ -1,6 +1,6 @@
 {
   "name": "resx-json-typescript-converter",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "Converts resx files to json and optionaly generates a TypeScript resourceManager.",
   "main": "dist/index.js",
   "scripts": {
