@@ -93,7 +93,7 @@ function getFilesForPath(inputPath, recursiveSearch) {
         return files;
     }
     //TODO wait for the fileseek maintainer to merge my pull request
-    files = (0, fileseek_plus_1.default)(inputPath, /.resx$/, recursiveSearch);
+    files = fileseek_plus_1.default(inputPath, /.resx$/, recursiveSearch);
     return files;
 }
 function sortFilesByRes(inputFiles, defaultCulture) {
