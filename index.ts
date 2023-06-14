@@ -25,19 +25,19 @@ class Options implements res2TsOptions {
             return;
         }
 
-        if(optionsObject.hasOwnProperty('mergeCulturesToSingleFile') && typeof optionsObject.mergeCulturesToSingleFile == 'boolean') {
+        if(Object.hasOwnProperty.call(optionsObject, 'mergeCulturesToSingleFile') && typeof optionsObject.mergeCulturesToSingleFile == 'boolean') {
             this.mergeCulturesToSingleFile = optionsObject.mergeCulturesToSingleFile;
         }
 
-        if(optionsObject.hasOwnProperty('generateTypeScriptResourceManager') && typeof optionsObject.generateTypeScriptResourceManager == 'boolean') {
+        if(Object.hasOwnProperty.call(optionsObject, 'generateTypeScriptResourceManager') && typeof optionsObject.generateTypeScriptResourceManager == 'boolean') {
             this.generateTypeScriptResourceManager = optionsObject.generateTypeScriptResourceManager;
         }
 
-        if(optionsObject.hasOwnProperty('searchRecursive') && typeof optionsObject.searchRecursive == 'boolean') {
+        if(Object.hasOwnProperty.call(optionsObject, 'searchRecursive') && typeof optionsObject.searchRecursive == 'boolean') {
             this.searchRecursive = optionsObject.searchRecursive;
         }
 
-        if(optionsObject.hasOwnProperty('defaultResxCulture') && typeof optionsObject.defaultResxCulture == 'string') {
+        if(Object.hasOwnProperty.call(optionsObject, 'defaultResxCulture') && typeof optionsObject.defaultResxCulture == 'string') {
             this.defaultResxCulture = optionsObject.defaultResxCulture;
         }
     }
@@ -144,7 +144,7 @@ function sortFilesByRes(inputFiles: string [], defaultCulture: string): resxFile
             info.culture = defaultCulture;
         }
 
-        if(!sorted.hasOwnProperty(info.name)) {
+        if(!Object.hasOwnProperty.call(sorted, info.name)) {
             sorted[info.name] = {}
         }
 
@@ -365,12 +365,12 @@ abstract class resourceFile {
         let language = this.resMan.language;
 
         // Check if the language exists for this resource and if the language has an corresponsing key
-        if (this.resources.hasOwnProperty(language) && this.resources[language].hasOwnProperty(resKey)) {
+        if (Object.hasOwnProperty.call(this.resources, language) && Object.hasOwnProperty.call(this.resources[language], resKey)) {
             return this.resources[language][resKey];
         }
 
         // If no entry could be found in the currently active language, try the default language
-        if (this.resources.hasOwnProperty('${defaultCulture}') && this.resources['${defaultCulture}'].hasOwnProperty(resKey)) {
+        if (Object.hasOwnProperty.call(this.resources, '${defaultCulture}') && Object.hasOwnProperty.call(this.resources['${defaultCulture}'], resKey)) {
             console.log(\`No text resource in the language "\${language}" with the key "\${resKey}".\`);
             return this.resources['${defaultCulture}'][resKey];
         }
@@ -425,8 +425,8 @@ function getResxKeyValues(filepath: string): resxKeyValues {
 
         if(xmlObject == undefined ||
             xmlObject == null ||
-            !xmlObject.hasOwnProperty('root') ||
-            !xmlObject.root.hasOwnProperty('data') ||
+            !Object.hasOwnProperty.call(xmlObject, 'root') ||
+            !Object.hasOwnProperty.call(xmlObject.root, 'data') ||
             xmlObject.root.data == undefined) {
 
             return;
