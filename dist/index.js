@@ -338,7 +338,7 @@ function getResxKeyValues(filepath) {
         }
         for (let i in xmlObject.root.data) {
             const name = xmlObject.root.data[i].$.name;
-            const value = xmlObject.root.data[i].value.toString().replace(/'/g, "\\'");
+            const value = xmlObject.root.data[i].value.toString();
             resources[name] = value;
         }
     });
